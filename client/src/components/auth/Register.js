@@ -1,5 +1,9 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
+import classnames from "classnames";
 
 const initialState = {
     name: "",
@@ -9,12 +13,24 @@ const initialState = {
     errors: {}
 };
 
-const Register = () => {
+const Register = (props) => {
 
     const [state, setState] = useState(initialState);
 
+    useEffect(() => {
+        if (props.errors) {
+            setState({
+                ...state,
+                errors: props.errors
+            });
+        }
+        if (props.auth.isAuthenticated) {
+            props.history.push("/dashboard");
+        }
+    }, [props.errors, props.auth.isAuthenticated])
+
     const onChange = e => {
-        setState( { ...state, [e.target.id]: e.target.value });
+        setState({ ...state, [e.target.id]: e.target.value });
     };
 
     const onSubmit = e => {
@@ -26,7 +42,9 @@ const Register = () => {
             password2: state.password2
         };
         console.log(newUser);
+        props.registerUser(newUser, props.history);
     };
+
 
     const { errors } = state;
 
@@ -50,42 +68,57 @@ const Register = () => {
                         <div className="input-field col s12">
                             <input
                                 onChange={onChange}
-                                value={state.name}
+                                value={state.name || ''}
                                 error={errors.name}
                                 id="name"
                                 type="text"
+                                className={classnames("", {
+                                    invalid: errors.name
+                                })}
                             />
                             <label htmlFor="name">Name</label>
                         </div>
                         <div className="input-field col s12">
                             <input
                                 onChange={onChange}
-                                value={state.email}
+                                value={state.email || ''}
                                 error={errors.email}
                                 id="email"
                                 type="email"
+                                className={classnames("", {
+                                    invalid: errors.email
+                                })}
                             />
                             <label htmlFor="email">Email</label>
+                            <span className="red-text">{errors.email}</span>
                         </div>
                         <div className="input-field col s12">
                             <input
                                 onChange={onChange}
-                                value={state.password}
+                                value={state.password || ''}
                                 error={errors.password}
                                 id="password"
                                 type="password"
+                                className={classnames("", {
+                                    invalid: errors.password
+                                })}
                             />
                             <label htmlFor="password">Password</label>
+                            <span className="red-text">{errors.password}</span>
                         </div>
                         <div className="input-field col s12">
                             <input
                                 onChange={onChange}
-                                value={state.password2}
+                                value={state.password2 || ''}
                                 error={errors.password2}
                                 id="password2"
                                 type="password"
+                                className={classnames("", {
+                                    invalid: errors.password2
+                                })}
                             />
                             <label htmlFor="password2">Confirm Password</label>
+                            <span className="red-text">{errors.password2}</span>
                         </div>
                         <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                             <button
@@ -108,4 +141,18 @@ const Register = () => {
     );
 }
 
-export default Register;
+Register.propTypes = {
+    registerUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+
+export default connect(
+    mapStateToProps,
+    { registerUser }
+)(withRouter(Register));
