@@ -27,7 +27,7 @@ const Register = (props) => {
         if (props.auth.isAuthenticated) {
             props.history.push("/dashboard");
         }
-    }, [props.errors, props.auth.isAuthenticated])
+    }, [])
 
     const onChange = e => {
         setState({ ...state, [e.target.id]: e.target.value });

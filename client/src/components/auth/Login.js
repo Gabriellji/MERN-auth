@@ -24,7 +24,7 @@ const Login = (props) => {
                 errors: props.errors
             });
         }
-    }, [props.auth.isAuthenticated])
+    }, [props])
 
     const onChange = e => {
         setState({ ...state, [e.target.id]: e.target.value });
