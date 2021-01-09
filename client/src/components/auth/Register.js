@@ -14,7 +14,7 @@ const Register = () => {
     const [state, setState] = useState(initialState);
 
     const onChange = e => {
-        setState(...state, { [e.target.id]: e.target.value });
+        setState( { ...state, [e.target.id]: e.target.value });
     };
 
     const onSubmit = e => {
